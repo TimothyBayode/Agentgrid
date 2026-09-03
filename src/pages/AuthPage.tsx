@@ -1,7 +1,10 @@
+import { useNavigate } from "@/lib/router";
 import { AuthShowcase } from "@/components/auth/AuthShowcase";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 
 export default function AuthPage() {
+  const navigate = useNavigate();
+
   return (
     <div className="flex min-h-screen items-center justify-center overflow-x-hidden bg-background p-3 sm:p-5">
       <div className="grid w-full max-w-[1180px] gap-5 lg:grid-cols-2">
@@ -13,7 +16,7 @@ export default function AuthPage() {
               One button signs you in or starts your registration.
             </p>
 
-            <SocialAuthButtons />
+            <SocialAuthButtons onSelect={() => navigate("/agents")} />
 
             <p className="mt-4 text-[13px] leading-relaxed text-muted-foreground">
               Each provider is a separate account. If you registered with the other one, continue

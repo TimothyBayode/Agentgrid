@@ -22,10 +22,10 @@ export function AgentFilters({ categories, active, onChange }: Props) {
             aria-selected={selected}
             onClick={() => onChange(category)}
             className={cn(
-              "h-8 shrink-0 border px-4 text-[12px] transition-colors",
+              "h-7 shrink-0 border px-4 text-[12px] transition-colors",
               selected
-                ? "border-foreground bg-foreground text-background"
-                : "border-border bg-surface text-muted-foreground hover:border-foreground/25 hover:text-foreground",
+                ? "border-black bg-black text-white"
+                : "border-transparent bg-[#333333] text-white hover:bg-[#3d3d3d]",
             )}
           >
             {category}

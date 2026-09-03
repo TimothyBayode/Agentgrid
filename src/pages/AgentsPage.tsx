@@ -27,20 +27,18 @@ export default function AgentsPage() {
   }, [query, category]);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-sidebar pb-14 lg:pb-0 lg:pl-[64px]">
+    <div className="min-h-screen overflow-x-hidden bg-surface pb-14 lg:pb-0 lg:pl-[64px]">
       <AgentSidebar />
 
       <div className="flex flex-col">
-        <header className="sticky top-0 z-20 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 bg-sidebar/95 px-4 py-3 backdrop-blur-sm sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:px-6">
+        <header className="sticky top-0 z-20 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 bg-surface/95 px-4 py-3 backdrop-blur-sm sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:px-6">
           <Logo className="lg:hidden" />
-          <div className="mx-auto w-full max-w-[520px] sm:col-start-2">
+          <div className="mx-auto w-full max-w-[640px] sm:col-start-2">
             <AgentSearch value={query} onChange={setQuery} />
           </div>
           <Button
             asChild
-            variant="soft"
-            size="sm"
-            className="col-span-2 justify-self-center sm:col-span-1 sm:justify-self-end"
+            className="col-span-2 h-7 border border-transparent bg-[#333333] px-4 font-normal text-[12px] text-white transition-colors hover:bg-[#3d3d3d] sm:col-span-1 sm:justify-self-end"
           >
             <Link to="/auth">Sign In</Link>
           </Button>
@@ -51,13 +49,7 @@ export default function AgentsPage() {
         </div>
 
         <div className="px-3 pb-8 sm:px-5">
-          <section className="rounded-2xl border border-border bg-background p-4 sm:p-5">
-            <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <h1 className="text-[16px] font-semibold">Agent catalog</h1>
-              <p className="text-[12px] text-muted-foreground">
-                {filtered.length} agents available on BNB Chain
-              </p>
-            </div>
+          <section className="rounded-[2px] border border-border bg-background p-4 sm:p-5">
             <AgentGrid agents={filtered} />
           </section>
         </div>

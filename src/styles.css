@@ -108,6 +108,12 @@
     border-radius: 2px;
   }
 
+  button,
+  a,
+  [role="button"] {
+    cursor: pointer;
+  }
+
   html {
     color-scheme: dark;
     scroll-behavior: smooth;

@@ -2,6 +2,7 @@ import { Component, type ReactNode } from "react";
 import { Link, normalizePath, Router, usePath, type RouteDefinition } from "@/lib/router";
 import AgentsPage from "@/pages/AgentsPage";
 import AuthPage from "@/pages/AuthPage";
+import DashboardPage from "@/pages/DashboardPage";
 import LandingPage from "@/pages/LandingPage";
 
 const routes: RouteDefinition[] = [
@@ -39,6 +40,16 @@ const routes: RouteDefinition[] = [
       ogTitle: "Sign up or log in — AgentGrid",
       ogDescription:
         "Create your AgentGrid account with email, Google, GitHub, or a BNB Chain wallet.",
+    },
+  },
+  {
+    path: "/dashboard",
+    element: <DashboardPage />,
+    meta: {
+      title: "Dashboard — AgentGrid",
+      description: "Monitor your agents, runs, and spend in one place.",
+      ogTitle: "Dashboard — AgentGrid",
+      ogDescription: "Monitor your agents, runs, and spend in one place.",
     },
   },
 ];
