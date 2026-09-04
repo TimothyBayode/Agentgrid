@@ -26,6 +26,7 @@ export type RouteDefinition = {
 
 type RouterContextValue = {
   path: string;
+  params: Record<string, string>;
   navigate: (to: string, options?: { replace?: boolean }) => void;
 };
 
@@ -34,6 +35,45 @@ const RouterContext = createContext<RouterContextValue | null>(null);
 export function normalizePath(path: string) {
   if (path.length > 1 && path.endsWith("/")) return path.slice(0, -1);
   return path || "/";
+}
+
+export type RouteMatch = {
+  route: RouteDefinition;
+  params: Record<string, string>;
+};
+
+export function matchRoute(path: string, routes: RouteDefinition[]): RouteMatch | null {
+  const normalized = normalizePath(path);
+
+  for (const route of routes) {
+    const pattern = normalizePath(route.path);
+
+    if (!pattern.includes(":")) {
+      if (pattern === normalized) return { route, params: {} };
+      continue;
+    }
+
+    const patternParts = pattern.split("/").filter(Boolean);
+    const pathParts = normalized.split("/").filter(Boolean);
+    if (patternParts.length !== pathParts.length) continue;
+
+    const params: Record<string, string> = {};
+    let matched = true;
+    for (let i = 0; i < patternParts.length; i++) {
+      const part = patternParts[i]!;
+      const value = pathParts[i]!;
+      if (part.startsWith(":")) {
+        params[part.slice(1)] = decodeURIComponent(value);
+      } else if (part !== value) {
+        matched = false;
+        break;
+      }
+    }
+
+    if (matched) return { route, params };
+  }
+
+  return null;
 }
 
 function getCurrentPath() {
@@ -56,6 +96,18 @@ export function usePath() {
   const context = useContext(RouterContext);
   if (!context) throw new Error("usePath must be used within <Router />");
   return context.path;
+}
+
+export function useParams<T extends Record<string, string> = Record<string, string>>() {
+  const context = useContext(RouterContext);
+  if (!context) throw new Error("useParams must be used within <Router />");
+  return context.params as T;
+}
+
+export function useRoute() {
+  const context = useContext(RouterContext);
+  if (!context) throw new Error("useRoute must be used within <Router />");
+  return context;
 }
 
 export function useNavigate() {
@@ -143,8 +195,8 @@ export function Router({ routes, children }: { routes: RouteDefinition[]; childr
   }, [scrollToStoredPosition]);
 
   useEffect(() => {
-    const route = routes.find((item) => normalizePath(item.path) === path);
-    const meta = route?.meta;
+    const match = matchRoute(path, routes);
+    const meta = match?.route.meta;
 
     if (!meta) {
       document.title = "Page not found — AgentGrid";
@@ -157,7 +209,8 @@ export function Router({ routes, children }: { routes: RouteDefinition[]; childr
     if (meta.ogDescription) setMeta("property", "og:description", meta.ogDescription);
   }, [path, routes]);
 
-  const value = useMemo(() => ({ path, navigate }), [path, navigate]);
+  const params = useMemo(() => matchRoute(path, routes)?.params ?? {}, [path, routes]);
+  const value = useMemo(() => ({ path, params, navigate }), [path, params, navigate]);
 
   return <RouterContext.Provider value={value}>{children}</RouterContext.Provider>;
 }

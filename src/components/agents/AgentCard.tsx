@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowUpRight, Star, Wallet } from "lucide-react";
+import { ArrowUpRight, BotMessageSquare, Star, Wallet } from "lucide-react";
 import type { Agent } from "@/types/agent";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -57,7 +57,7 @@ export function AgentCard({ agent }: { agent: Agent }) {
         </p>
       </button>
 
-      <DialogContent className="max-w-3xl gap-0 overflow-hidden rounded-[2px] border-border bg-surface p-0">
+      <DialogContent className="max-w-3xl gap-0 overflow-hidden rounded-[2px] sm:rounded-[2px] border-border bg-surface p-0">
         <div className="grid sm:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
           <div className="relative h-44 sm:h-full sm:min-h-[380px]">
             <img
@@ -108,7 +108,7 @@ export function AgentCard({ agent }: { agent: Agent }) {
                 {agent.capabilities.map((capability) => (
                   <li
                     key={capability}
-                    className="rounded-md border border-border bg-background px-2 py-0.5 text-[11px] text-muted-foreground"
+                    className="rounded-[2px] border border-border bg-background px-2 py-0.5 text-[11px] text-muted-foreground"
                   >
                     {capability}
                   </li>
@@ -142,6 +142,10 @@ export function AgentCard({ agent }: { agent: Agent }) {
                 Hire
               </Button>
             </div>
+            <Button className="mt-2 w-full bg-[#FAC102] text-black hover:bg-[#FAC102]/90">
+              <BotMessageSquare className="h-4 w-4" />
+              Ask Grid
+            </Button>
           </div>
         </div>
       </DialogContent>

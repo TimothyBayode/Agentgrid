@@ -7,21 +7,21 @@ type Props = {
 export function SocialAuthButtons({ onSelect }: Props) {
   return (
     <div className="grid gap-3 sm:grid-cols-3">
-      <SocialButton data-tip="Continue with Google" onClick={() => onSelect?.("google")}>
+      <SocialButton dataTip="Continue with Google" onClick={() => onSelect?.("google")}>
         <GoogleMark />
         Google
       </SocialButton>
-      <SocialButton data-tip="Continue with GitHub" onClick={() => onSelect?.("github")}>
+      <SocialButton dataTip="Continue with GitHub" onClick={() => onSelect?.("github")}>
         <Github className="h-4 w-4" />
         Github
       </SocialButton>
-      <SocialButton data-tip="Continue with Discord" onClick={() => onSelect?.("discord")}>
+      <SocialButton dataTip="Continue with Discord" onClick={() => onSelect?.("discord")}>
         <DiscordMark />
         Discord
       </SocialButton>
       <SocialButton
         className="sm:col-span-3"
-        data-tip="Use a BNB Chain wallet"
+        dataTip="Use a BNB Chain wallet"
         onClick={() => onSelect?.("wallet")}
       >
         <Wallet className="h-4 w-4 text-emerald" />

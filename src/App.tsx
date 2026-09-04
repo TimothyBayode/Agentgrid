@@ -1,8 +1,14 @@
 import { Component, type ReactNode } from "react";
-import { Link, normalizePath, Router, usePath, type RouteDefinition } from "@/lib/router";
+import { matchRoute, Link, Router, usePath, type RouteDefinition } from "@/lib/router";
 import AgentsPage from "@/pages/AgentsPage";
+import ActivityDetailPage from "@/pages/ActivityDetailPage";
+import ActivityPage from "@/pages/ActivityPage";
 import AuthPage from "@/pages/AuthPage";
 import DashboardPage from "@/pages/DashboardPage";
+import HireDetailPage from "@/pages/HireDetailPage";
+import MyHiresPage from "@/pages/MyHiresPage";
+import TransactionDetailPage from "@/pages/TransactionDetailPage";
+import TransactionsPage from "@/pages/TransactionsPage";
 import LandingPage from "@/pages/LandingPage";
 
 const routes: RouteDefinition[] = [
@@ -50,6 +56,66 @@ const routes: RouteDefinition[] = [
       description: "Monitor your agents, runs, and spend in one place.",
       ogTitle: "Dashboard — AgentGrid",
       ogDescription: "Monitor your agents, runs, and spend in one place.",
+    },
+  },
+  {
+    path: "/hires",
+    element: <MyHiresPage />,
+    meta: {
+      title: "My Hires — AgentGrid",
+      description: "Track and manage every agent you've hired.",
+      ogTitle: "My Hires — AgentGrid",
+      ogDescription: "Track and manage every agent you've hired.",
+    },
+  },
+  {
+    path: "/hires/:hireId",
+    element: <HireDetailPage />,
+    meta: {
+      title: "Hire details — AgentGrid",
+      description: "Review agent execution, results, and transaction details.",
+      ogTitle: "Hire details — AgentGrid",
+      ogDescription: "Review agent execution, results, and transaction details.",
+    },
+  },
+  {
+    path: "/activity",
+    element: <ActivityPage />,
+    meta: {
+      title: "Activity — AgentGrid",
+      description: "Everything happening across your AgentGrid account.",
+      ogTitle: "Activity — AgentGrid",
+      ogDescription: "Everything happening across your AgentGrid account.",
+    },
+  },
+  {
+    path: "/activity/:activityId",
+    element: <ActivityDetailPage />,
+    meta: {
+      title: "Activity details — AgentGrid",
+      description: "Review the details of an AgentGrid account event.",
+      ogTitle: "Activity details — AgentGrid",
+      ogDescription: "Review the details of an AgentGrid account event.",
+    },
+  },
+  {
+    path: "/transactions",
+    element: <TransactionsPage />,
+    meta: {
+      title: "Transactions — AgentGrid",
+      description: "Track payments, blockchain transactions, and on-chain activity.",
+      ogTitle: "Transactions — AgentGrid",
+      ogDescription: "Track payments, blockchain transactions, and on-chain activity.",
+    },
+  },
+  {
+    path: "/transactions/:transactionId",
+    element: <TransactionDetailPage />,
+    meta: {
+      title: "Transaction details — AgentGrid",
+      description: "Review an AgentGrid payment and its on-chain details.",
+      ogTitle: "Transaction details — AgentGrid",
+      ogDescription: "Review an AgentGrid payment and its on-chain details.",
     },
   },
 ];
@@ -136,13 +202,13 @@ class RouteErrorBoundary extends Component<{ children: ReactNode }, RouteErrorBo
 
 function RouterContent() {
   const path = usePath();
-  const route = routes.find((item) => normalizePath(item.path) === path);
+  const match = matchRoute(path, routes);
 
-  if (!route) {
+  if (!match) {
     return <NotFoundComponent />;
   }
 
-  return <RouteErrorBoundary key={path}>{route.element}</RouteErrorBoundary>;
+  return <RouteErrorBoundary key={path}>{match.route.element}</RouteErrorBoundary>;
 }
 
 export default function App() {

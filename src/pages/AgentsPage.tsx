@@ -14,6 +14,11 @@ export default function AgentsPage() {
   const [category, setCategory] = useState<string>("All");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const toggleSidebar = () => {
+    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+    setSidebarOpen((prev) => (isDesktop ? !prev : true));
+  };
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return agents.filter((agent) => {
@@ -26,11 +31,6 @@ export default function AgentsPage() {
       return agentMatchesFilter(agent, category) && matchesQuery;
     });
   }, [query, category]);
-
-  const toggleSidebar = () => {
-    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
-    setSidebarOpen((prev) => (isDesktop ? !prev : true));
-  };
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-surface">
@@ -53,7 +53,7 @@ export default function AgentsPage() {
             <Menu className="h-5 w-5" />
           </button>
 
-          <div className="mx-auto w-full max-w-[640px]">
+          <div className="w-full max-w-[520px]">
             <AgentSearch value={query} onChange={setQuery} />
           </div>
 
@@ -65,7 +65,7 @@ export default function AgentsPage() {
           </Button>
         </header>
 
-        <div className="px-4 pb-3 sm:px-6">
+        <div className="px-4 py-4 sm:px-6">
           <AgentFilters categories={agentCategories} active={category} onChange={setCategory} />
         </div>
 

@@ -15,7 +15,7 @@ export function AgentSearch({ value, onChange }: Props) {
         onChange={(event) => onChange(event.target.value)}
         placeholder="Search agents, capabilities, protocols"
         aria-label="Search agents"
-        className="h-9 w-full rounded-[2px] border border-border bg-black pr-4 pl-11 text-[13px] text-white placeholder:text-white/60 transition-colors focus:border-[#333333] focus:outline-none"
+        className="h-10 w-full rounded-[2px] border border-border bg-black pr-4 pl-11 text-[13px] text-white placeholder:text-white/60 transition-colors focus:border-[#333333] focus:outline-none"
       />
     </div>
   );
