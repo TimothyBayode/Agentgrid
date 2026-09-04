@@ -155,3 +155,58 @@
     transform: translate3d(-50%, 0, 0);
   }
 }
+
+.tip {
+  position: relative;
+}
+
+.tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: #000;
+  color: #fff;
+  border: 1px solid rgb(255 255 255 / 14%);
+  padding: 5px 8px;
+  font-size: 11px;
+  line-height: 1;
+  white-space: nowrap;
+  border-radius: 2px;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+  z-index: 60;
+}
+
+.tip:hover::after,
+.tip:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.tip--bottom::after {
+  bottom: auto;
+  top: calc(100% + 8px);
+  transform: translateX(-50%) translateY(-4px);
+}
+
+.tip--bottom:hover::after,
+.tip--bottom:focus-visible::after {
+  transform: translateX(-50%) translateY(0);
+}
+
+.tip--right::after {
+  bottom: auto;
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-4px);
+}
+
+.tip--right:hover::after,
+.tip--right:focus-visible::after {
+  transform: translateY(-50%) translateX(0);
+}

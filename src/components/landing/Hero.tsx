@@ -27,10 +27,10 @@ export function Hero() {
               size="lg"
               className="bg-white text-black hover:bg-white/90"
             >
-              <Link to="/auth">Explore Agents</Link>
+              <Link to="/agents">Explore Agents</Link>
             </Button>
             <Button asChild variant="soft" size="lg">
-              <Link to="/agents">List an Agent</Link>
+              <Link to="/auth">List an Agent</Link>
             </Button>
           </div>
         </div>

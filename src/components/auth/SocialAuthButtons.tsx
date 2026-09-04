@@ -7,21 +7,25 @@ type Props = {
 export function SocialAuthButtons({ onSelect }: Props) {
   return (
     <div className="grid gap-3 sm:grid-cols-3">
-      <SocialButton onClick={() => onSelect?.("google")}>
+      <SocialButton data-tip="Continue with Google" onClick={() => onSelect?.("google")}>
         <GoogleMark />
         Google
       </SocialButton>
-      <SocialButton onClick={() => onSelect?.("github")}>
+      <SocialButton data-tip="Continue with GitHub" onClick={() => onSelect?.("github")}>
         <Github className="h-4 w-4" />
         Github
       </SocialButton>
-      <SocialButton onClick={() => onSelect?.("discord")}>
+      <SocialButton data-tip="Continue with Discord" onClick={() => onSelect?.("discord")}>
         <DiscordMark />
         Discord
       </SocialButton>
-      <SocialButton className="sm:col-span-3" onClick={() => onSelect?.("wallet")}>
+      <SocialButton
+        className="sm:col-span-3"
+        data-tip="Use a BNB Chain wallet"
+        onClick={() => onSelect?.("wallet")}
+      >
         <Wallet className="h-4 w-4 text-emerald" />
-        Continue with BNB Chain wallet
+        Connect Wallet
       </SocialButton>
     </div>
   );
@@ -31,16 +35,19 @@ function SocialButton({
   children,
   className = "",
   onClick,
+  dataTip,
 }: {
   children: React.ReactNode;
   className?: string;
   onClick?: () => void;
+  dataTip?: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex h-11 items-center justify-center gap-2 border border-border bg-surface text-[13px] font-medium text-foreground transition-colors hover:border-foreground/25 hover:bg-surface-2 ${className}`}
+      {...(dataTip ? { "data-tip": dataTip } : {})}
+      className={`tip tip--bottom inline-flex h-11 items-center justify-center gap-2 border border-border bg-surface text-[13px] font-medium text-foreground transition-colors hover:border-foreground/25 hover:bg-surface-2 ${className}`}
     >
       {children}
     </button>

@@ -7,7 +7,7 @@ type Props = {
 
 export function AgentSearch({ value, onChange }: Props) {
   return (
-    <div className="relative w-full">
+    <div className="tip tip--bottom relative w-full" data-tip="Search the agent marketplace">
       <Search className="pointer-events-none absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-white" />
       <input
         type="search"

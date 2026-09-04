@@ -70,7 +70,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-30 w-full bg-background/95 backdrop-blur-sm">
       <div className="mx-auto grid max-w-[1200px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-4 md:grid-cols-[1fr_auto_1fr] md:py-5">
-        <Logo />
+        <Logo size="h-8" />
 
         <nav className="hidden items-center gap-8 justify-self-center text-[13px] text-muted-foreground md:flex">
           {links.map((link) => {
@@ -101,15 +101,18 @@ export function Header() {
             asChild
             variant="pill"
             size="sm"
-            className="hidden bg-[#FAC102] text-black hover:bg-[#FAC102]/90 sm:inline-flex"
+            className="tip tip--bottom hidden bg-[#FAC102] text-black hover:bg-[#FAC102]/90 sm:inline-flex"
           >
-            <Link to="/auth">Get Started</Link>
+            <Link to="/auth" data-tip="Create your account">
+              Get Started
+            </Link>
           </Button>
           <button
             type="button"
             aria-label={open ? "Close menu" : "Open menu"}
+            data-tip="Menu"
             onClick={() => setOpen((v) => !v)}
-            className="grid h-9 w-9 shrink-0 place-items-center border border-border text-foreground md:hidden"
+            className="tip tip--bottom grid h-9 w-9 shrink-0 place-items-center border border-border text-foreground md:hidden"
           >
             {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>

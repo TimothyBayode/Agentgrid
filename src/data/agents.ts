@@ -29,7 +29,34 @@ export const agentCategories = [
   "NFT",
   "Gaming",
   "Ops",
+  "Trending",
+  "Newly listed",
+  "Rebalancing",
+  "Yield",
+  "PancakeSwap",
 ] as const;
+
+export function agentMatchesFilter(agent: Agent, filter: string): boolean {
+  if (filter === "All" || filter === agent.category) return true;
+
+  switch (filter) {
+    case "Trending":
+      return agent.badge === "Trending";
+    case "Newly listed":
+      return agent.badge === "New";
+    case "PancakeSwap":
+      return agent.protocol === "PancakeSwap";
+    case "Rebalancing":
+      return agent.capabilities.some((capability) => capability.toLowerCase().includes("rebalanc"));
+    case "Yield":
+      return (
+        agent.capabilities.some((capability) => /yield|apy/i.test(capability)) ||
+        /yield|apy/i.test(`${agent.name} ${agent.description}`)
+      );
+    default:
+      return false;
+  }
+}
 
 const seeds: Array<Omit<Agent, "id" | "thumbnail">> = [
   {
