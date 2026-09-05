@@ -30,7 +30,7 @@ export function AppShell({ header, actions, headerClassName, children }: AppShel
       >
         <header
           className={cn(
-            "sticky top-0 z-20 flex items-center gap-3 border-b border-border bg-surface/95 px-4 py-3 backdrop-blur-sm sm:px-6",
+            "sticky top-0 z-20 flex items-center gap-3 bg-surface/95 px-4 py-3 backdrop-blur-sm sm:px-6",
             headerClassName,
           )}
         >

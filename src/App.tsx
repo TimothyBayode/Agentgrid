@@ -10,6 +10,8 @@ import MyHiresPage from "@/pages/MyHiresPage";
 import TransactionDetailPage from "@/pages/TransactionDetailPage";
 import TransactionsPage from "@/pages/TransactionsPage";
 import LandingPage from "@/pages/LandingPage";
+import MyAgentsPage from "@/pages/MyAgentsPage";
+import AskGridPage from "@/pages/AskGridPage";
 
 const routes: RouteDefinition[] = [
   {
@@ -34,6 +36,38 @@ const routes: RouteDefinition[] = [
       ogTitle: "Agent catalog — AgentGrid marketplace",
       ogDescription:
         "Browse trading, DeFi, research, and security AI agents with live status, reputation, and pay-per-run pricing.",
+    },
+  },
+  {
+    path: "/my-agents",
+    element: <MyAgentsPage />,
+    meta: {
+      title: "My Agents — AgentGrid",
+      description: "Manage your owned agents, marketplace presence, performance, and earnings.",
+      ogTitle: "My Agents — AgentGrid",
+      ogDescription: "Manage your owned agents, marketplace presence, performance, and earnings.",
+    },
+  },
+  {
+    path: "/ask-grid",
+    element: <AskGridPage />,
+    meta: {
+      title: "Ask Grid — AgentGrid",
+      description:
+        "Describe what you need and let Grid find, compare, and prepare the right agent hire.",
+      ogTitle: "Ask Grid — AgentGrid",
+      ogDescription:
+        "Describe what you need and let Grid find, compare, and prepare the right agent hire.",
+    },
+  },
+  {
+    path: "/my-agents/:agentId",
+    element: <MyAgentsPage />,
+    meta: {
+      title: "Agent management — AgentGrid",
+      description: "Manage agent performance, reputation, earnings, and marketplace controls.",
+      ogTitle: "Agent management — AgentGrid",
+      ogDescription: "Manage agent performance, reputation, earnings, and marketplace controls.",
     },
   },
   {

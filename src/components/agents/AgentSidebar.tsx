@@ -20,6 +20,7 @@ type SidebarItem = {
   icon: LucideIcon;
   label: string;
   to?: string;
+  soon?: boolean;
 };
 type SidebarSection = { title: string; items: SidebarItem[] };
 
@@ -39,11 +40,11 @@ const sections: SidebarSection[] = [
   {
     title: "My Agents",
     items: [
-      { icon: Bot, label: "My Agents" },
-      { icon: PlusCircle, label: "List an Agent", to: "/auth" },
+      { icon: Bot, label: "My Agents", to: "/my-agents" },
+      { icon: PlusCircle, label: "List an Agent", soon: true },
     ],
   },
-  { title: "Tools", items: [{ icon: BotMessageSquare, label: "Ask Grid" }] },
+  { title: "Tools", items: [{ icon: BotMessageSquare, label: "Ask Grid", to: "/ask-grid" }] },
 ];
 
 const accountSection: SidebarSection = {
@@ -191,7 +192,9 @@ function SidebarGroup({
               type="button"
               aria-label={item.label}
               aria-current={isActive(item.to) ? "page" : undefined}
+              aria-disabled={item.soon || undefined}
               data-tip={item.label}
+              disabled={item.soon}
               onClick={() => item.to && onNavigate(item.to)}
               className={cn(
                 "tip tip--right flex w-full items-center gap-3 rounded-[2px] px-2 py-2 text-left text-[13px] transition-colors",
@@ -199,11 +202,19 @@ function SidebarGroup({
                   ? "bg-white/10 text-white"
                   : "text-white/60 hover:bg-white/5 hover:text-white",
                 !item.to && "hover:bg-transparent",
+                item.soon && "cursor-not-allowed opacity-60 hover:text-white/60",
                 !open && "lg:justify-center lg:px-0",
               )}
             >
               <item.icon className="h-4 w-4 shrink-0" />
-              <span className={cn(!open && "lg:hidden")}>{item.label}</span>
+              <span className={cn("flex min-w-0 items-center gap-2", !open && "lg:hidden")}>
+                <span>{item.label}</span>
+                {item.soon ? (
+                  <span className="rounded-[2px] bg-[#FAC102] px-1.5 py-0.5 text-[9px] font-semibold tracking-wide text-black uppercase">
+                    Soon
+                  </span>
+                ) : null}
+              </span>
             </button>
           </li>
         ))}
