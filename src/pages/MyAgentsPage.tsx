@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { agents } from "@/data/agents";
 import { getOwnedAgent, ownedAgents, type OwnedAgentStatus } from "@/data/my-agents";
 import { cn } from "@/lib/utils";
+import type { LucideIcon } from "lucide-react";
 
 const statusStyles: Record<OwnedAgentStatus, string> = {
   Live: "border-emerald/40 bg-emerald/10 text-emerald",
@@ -236,16 +237,19 @@ function MyAgentsDashboard() {
 }
 
 function Metric({
+  icon: Icon,
   label,
   value,
   detail,
 }: {
+  icon?: LucideIcon;
   label: string;
   value: string | number;
   detail: string;
 }) {
   return (
     <div className="border border-border bg-background p-4">
+      {Icon ? <Icon className="h-4 w-4 text-[#FAC102]" /> : null}
       <p className="text-[24px] font-semibold tracking-tight text-white">{value}</p>
       <p className="mt-1 text-[12px] text-muted-foreground">{label}</p>
       <p className="mt-3 text-[11px] text-emerald">{detail}</p>

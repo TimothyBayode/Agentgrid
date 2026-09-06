@@ -39,7 +39,7 @@ export default function AgentsPage() {
       <div
         className={cn(
           "flex flex-col transition-[padding] duration-200",
-          sidebarOpen ? "lg:pl-72" : "lg:pl-16",
+          sidebarOpen ? "lg:pl-64" : "lg:pl-16",
         )}
       >
         <header className="sticky top-0 z-20 flex items-center gap-3 bg-surface/95 px-4 py-3 backdrop-blur-sm sm:px-6">

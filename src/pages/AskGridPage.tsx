@@ -3,8 +3,8 @@ import {
   ChevronRight,
   GitCompare,
   History,
+  Plus,
   Send,
-  ShieldCheck,
   Sparkles,
   Star,
   WalletCards,
@@ -38,7 +38,6 @@ export default function AskGridPage() {
   const [compare, setCompare] = useState<Agent[]>([]);
   const [hireAgent, setHireAgent] = useState<Agent | null>(null);
   const [historyOpen, setHistoryOpen] = useState(true);
-  const [contextOpen, setContextOpen] = useState(true);
 
   const recommendations = useMemo(() => {
     const query = (question ?? "").toLowerCase();
@@ -93,10 +92,7 @@ export default function AskGridPage() {
       <main
         className={cn(
           "grid min-h-[calc(100vh-65px)]",
-          historyOpen && contextOpen && "lg:grid-cols-[220px_minmax(0,1fr)_260px]",
-          historyOpen && !contextOpen && "lg:grid-cols-[220px_minmax(0,1fr)_52px]",
-          !historyOpen && contextOpen && "lg:grid-cols-[52px_minmax(0,1fr)_260px]",
-          !historyOpen && !contextOpen && "lg:grid-cols-[52px_minmax(0,1fr)_52px]",
+          historyOpen ? "lg:grid-cols-[220px_minmax(0,1fr)]" : "lg:grid-cols-[52px_minmax(0,1fr)]",
         )}
       >
         <aside className="hidden border-r border-border p-3 lg:block">
@@ -126,7 +122,7 @@ export default function AskGridPage() {
                 <button
                   key={title}
                   type="button"
-                  onClick={() => setQuestion(title)}
+                  onClick={() => setQuestion(title ?? "")}
                   className="w-full rounded-[2px] px-2 py-2 text-left transition-colors hover:bg-white/5"
                 >
                   <p className="truncate text-[12px] text-foreground">{title}</p>
@@ -137,7 +133,7 @@ export default function AskGridPage() {
           ) : null}
         </aside>
 
-        <section className="flex min-w-0 flex-col border-x border-border px-4 py-8 sm:px-8">
+        <section className="flex min-w-0 flex-col px-4 py-8 sm:px-8">
           <div className={cn("mx-auto flex w-full max-w-[720px] flex-1 flex-col")}>
             {!question ? (
               <div className="text-center">
@@ -197,62 +193,29 @@ export default function AskGridPage() {
                   className="w-full resize-none bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted-foreground"
                 />
                 <div className="flex items-center justify-between">
-                  <Button
-                    type="submit"
-                    className="h-7 bg-[#FAC102] px-3 text-[12px] text-black hover:bg-[#FAC102]/90"
-                  >
-                    <Send className="h-3.5 w-3.5" />
-                    Send
-                  </Button>
+                  <span />
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="h-7 border-dashed border-white/35 bg-transparent px-3 text-[12px] text-white hover:border-white/60 hover:bg-white/5 hover:text-white"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      Add context
+                    </Button>
+                    <Button
+                      type="submit"
+                      className="h-7 bg-[#FAC102] px-3 text-[12px] text-black hover:bg-[#FAC102]/90"
+                    >
+                      <Send className="h-3.5 w-3.5" />
+                      Send
+                    </Button>
+                  </div>
                 </div>
               </form>
             </div>
           </div>
         </section>
-
-        {contextOpen ? (
-          <aside className="hidden border-l border-border p-5 lg:block">
-            <div className="mb-4 flex justify-end">
-              <button
-                type="button"
-                aria-label="Collapse context panel"
-                className="rounded-[2px] p-1 text-muted-foreground hover:bg-white/5 hover:text-[#FAC102]"
-                onClick={() => setContextOpen(false)}
-              >
-                <ChevronRight className="h-3.5 w-3.5 rotate-180" />
-              </button>
-            </div>
-            {selected ? (
-              <ContextPanel
-                agent={selected}
-                onClose={() => setSelected(null)}
-                onHire={() => setHireAgent(selected)}
-              />
-            ) : (
-              <div className="flex h-full flex-col justify-center text-center">
-                <ShieldCheck className="mx-auto h-5 w-5 text-[#FAC102]" />
-                <p className="mt-3 text-[12px] font-semibold text-foreground">
-                  Context appears here
-                </p>
-                <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-                  Select an agent from Grid&apos;s recommendations to inspect its reputation,
-                  pricing, and supported protocols.
-                </p>
-              </div>
-            )}
-          </aside>
-        ) : (
-          <aside className="hidden border-l border-border p-3 lg:flex lg:flex-col lg:items-center">
-            <button
-              type="button"
-              aria-label="Expand context panel"
-              className="rounded-[2px] p-1 text-muted-foreground hover:bg-white/5 hover:text-[#FAC102]"
-              onClick={() => setContextOpen(true)}
-            >
-              <ChevronRight className="h-3.5 w-3.5" />
-            </button>
-          </aside>
-        )}
       </main>
       {hireAgent ? <HirePreparation agent={hireAgent} onClose={() => setHireAgent(null)} /> : null}
     </AppShell>
@@ -434,67 +397,6 @@ function Comparison({ agents: compared }: { agents: Agent[] }) {
         {compared[0]?.name} is the stronger choice if your priority is reputation and marketplace
         activity.
       </p>
-    </div>
-  );
-}
-
-function ContextPanel({
-  agent,
-  onClose,
-  onHire,
-}: {
-  agent: Agent;
-  onClose: () => void;
-  onHire: () => void;
-}) {
-  return (
-    <div>
-      <div className="flex items-center justify-between">
-        <p className="text-[10px] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
-          Selected agent
-        </p>
-        <button
-          type="button"
-          onClick={onClose}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          <X className="h-3.5 w-3.5" />
-        </button>
-      </div>
-      <img
-        src={agent.thumbnail}
-        alt=""
-        className="mt-5 aspect-video w-full rounded-[2px] object-cover"
-      />
-      <h2 className="mt-4 text-[16px] font-semibold text-foreground">{agent.name}</h2>
-      <p className="mt-1 text-[12px] text-muted-foreground">{agent.description}</p>
-      <div className="mt-5 grid grid-cols-2 gap-2">
-        <ContextStat label="Reputation" value={agent.reputation.toFixed(1)} />
-        <ContextStat label="Runs" value={(agent.runs / 1000).toFixed(1) + "k"} />
-        <ContextStat label="Price" value={agent.pricePerRun} />
-        <ContextStat label="Protocol" value={agent.protocol} />
-      </div>
-      <div className="mt-5">
-        <p className="text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
-          Capabilities
-        </p>
-        <div className="mt-2 flex flex-wrap gap-1">
-          {agent.capabilities.map((capability) => (
-            <span
-              key={capability}
-              className="rounded-[2px] border border-border px-2 py-1 text-[10px] text-muted-foreground"
-            >
-              {capability}
-            </span>
-          ))}
-        </div>
-      </div>
-      <Button
-        onClick={onHire}
-        className="mt-5 w-full bg-[#FAC102] text-[12px] text-black hover:bg-[#FAC102]/90"
-      >
-        Prepare hire
-      </Button>
     </div>
   );
 }

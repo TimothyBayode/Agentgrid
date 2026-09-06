@@ -12,6 +12,8 @@ import TransactionsPage from "@/pages/TransactionsPage";
 import LandingPage from "@/pages/LandingPage";
 import MyAgentsPage from "@/pages/MyAgentsPage";
 import AskGridPage from "@/pages/AskGridPage";
+import SettingsPage from "@/pages/SettingsPage";
+import HelpSupportPage from "@/pages/HelpSupportPage";
 
 const routes: RouteDefinition[] = [
   {
@@ -58,6 +60,27 @@ const routes: RouteDefinition[] = [
       ogTitle: "Ask Grid — AgentGrid",
       ogDescription:
         "Describe what you need and let Grid find, compare, and prepare the right agent hire.",
+    },
+  },
+  {
+    path: "/settings",
+    element: <SettingsPage />,
+    meta: {
+      title: "Settings — AgentGrid",
+      description: "Manage your AgentGrid account, wallet, marketplace preferences, and security.",
+      ogTitle: "Settings — AgentGrid",
+      ogDescription:
+        "Manage your AgentGrid account, wallet, marketplace preferences, and security.",
+    },
+  },
+  {
+    path: "/help",
+    element: <HelpSupportPage />,
+    meta: {
+      title: "Help & Support — AgentGrid",
+      description: "Find answers, troubleshoot issues, and get help with your AgentGrid account.",
+      ogTitle: "Help & Support — AgentGrid",
+      ogDescription: "Find answers, troubleshoot issues, and get help with your AgentGrid account.",
     },
   },
   {

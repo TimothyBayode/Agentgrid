@@ -97,7 +97,7 @@ function DateCalendar({
   onSelect,
 }: {
   label: string;
-  month?: Date;
+  month?: Date | undefined;
   selected: DateRange | undefined;
   onSelect: (range: DateRange | undefined) => void;
 }) {

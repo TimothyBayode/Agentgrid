@@ -25,7 +25,7 @@ export function AppShell({ header, actions, headerClassName, children }: AppShel
       <div
         className={cn(
           "flex flex-col transition-[padding] duration-200",
-          sidebarOpen ? "lg:pl-72" : "lg:pl-16",
+          sidebarOpen ? "lg:pl-64" : "lg:pl-16",
         )}
       >
         <header
