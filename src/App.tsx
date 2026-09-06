@@ -1,5 +1,6 @@
-import { Component, type ReactNode } from "react";
-import { matchRoute, Link, Router, usePath, type RouteDefinition } from "@/lib/router";
+import { Component, useEffect, type ReactNode } from "react";
+import { usePrivy } from "@privy-io/react-auth";
+import { matchRoute, Link, Router, useNavigate, usePath, type RouteDefinition } from "@/lib/router";
 import AgentsPage from "@/pages/AgentsPage";
 import ActivityDetailPage from "@/pages/ActivityDetailPage";
 import ActivityPage from "@/pages/ActivityPage";
@@ -265,7 +266,54 @@ function RouterContent() {
     return <NotFoundComponent />;
   }
 
-  return <RouteErrorBoundary key={path}>{match.route.element}</RouteErrorBoundary>;
+  return (
+    <RouteErrorBoundary key={path}>
+      {protectedPaths.has(match.route.path) ? (
+        <ProtectedRoute>{match.route.element}</ProtectedRoute>
+      ) : (
+        match.route.element
+      )}
+    </RouteErrorBoundary>
+  );
+}
+
+const protectedPaths = new Set([
+  "/agents",
+  "/my-agents",
+  "/ask-grid",
+  "/settings",
+  "/help",
+  "/my-agents/:agentId",
+  "/dashboard",
+  "/hires",
+  "/hires/:hireId",
+  "/activity",
+  "/activity/:activityId",
+  "/transactions",
+  "/transactions/:transactionId",
+]);
+
+function ProtectedRoute({ children }: { children: ReactNode }) {
+  const { ready, authenticated } = usePrivy();
+  const navigate = useNavigate();
+
+  if (!ready) {
+    return <div className="min-h-screen bg-background" />;
+  }
+
+  if (!authenticated) {
+    return <RedirectToAuth navigate={navigate} />;
+  }
+
+  return children;
+}
+
+function RedirectToAuth({ navigate }: { navigate: ReturnType<typeof useNavigate> }) {
+  useEffect(() => {
+    navigate("/auth", { replace: true });
+  }, [navigate]);
+
+  return null;
 }
 
 export default function App() {

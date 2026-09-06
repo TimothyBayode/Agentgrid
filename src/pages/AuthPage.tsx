@@ -1,9 +1,21 @@
+import { useState } from "react";
+import { useLogin } from "@privy-io/react-auth";
 import { useNavigate } from "@/lib/router";
 import { AuthShowcase } from "@/components/auth/AuthShowcase";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 
 export default function AuthPage() {
   const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+  const { login } = useLogin({
+    onComplete: () => navigate("/agents", { replace: true }),
+    onError: (loginError) => setError(String(loginError)),
+  });
+
+  const startLogin = (provider: "google" | "github" | "discord" | "wallet") => {
+    setError(null);
+    login({ loginMethods: [provider] });
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center overflow-x-hidden bg-background p-3 sm:p-5">
@@ -16,7 +28,9 @@ export default function AuthPage() {
               One button signs you in or starts your registration.
             </p>
 
-            <SocialAuthButtons onSelect={() => navigate("/agents")} />
+            <SocialAuthButtons onSelect={startLogin} />
+
+            {error ? <p className="mt-4 text-sm text-red-500">{error}</p> : null}
 
             <p className="mt-4 text-[13px] leading-relaxed text-muted-foreground">
               Each provider is a separate account. If you registered with the other one, continue
