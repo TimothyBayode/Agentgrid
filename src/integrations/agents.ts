@@ -14,6 +14,8 @@ export type Erc8004Registration = {
   description?: string;
   image?: string;
   services?: Erc8004Service[];
+  /** Some registrations publish A2A-style `endpoints` instead of `services`. */
+  endpoints?: Erc8004Service[];
   x402Support?: boolean;
   active?: boolean;
   supportedTrust?: string[];
@@ -108,7 +110,9 @@ export function toAgent(agent: Erc8004OnchainAgent, chain: Erc8004Chain, index: 
       registration?.description ||
       "No description registered. View the agent on-chain for details.",
     category: registration?.category ?? "Other",
-    capabilities: (registration?.services ?? []).map((service) => service.name),
+    capabilities: (registration?.services ?? registration?.endpoints ?? []).map(
+      (service) => service.name,
+    ),
     reputation: agent.reputation.average ?? 0,
     runs: 0,
     pricePerRun: registration?.pricePerRun ?? "Pay per run",

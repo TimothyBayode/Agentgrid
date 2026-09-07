@@ -7,13 +7,23 @@ import { serverEnv } from "../config/env.js";
  * The Privy access token remains the identity authority; Supabase only stores
  * the synchronized profile, wallets, and marketplace state.
  */
-export const supabase: SupabaseClient = createClient(
-  serverEnv.supabaseUrl,
-  serverEnv.supabaseServiceRoleKey,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  },
-);
+export function isSupabaseConfigured(): boolean {
+  return Boolean(serverEnv.supabaseUrl && serverEnv.supabaseServiceRoleKey);
+}
+
+let client: SupabaseClient | null = null;
+
+export function getSupabase(): SupabaseClient {
+  if (!client) {
+    if (!isSupabaseConfigured()) {
+      throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are not configured");
+    }
+    client = createClient(serverEnv.supabaseUrl, serverEnv.supabaseServiceRoleKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    });
+  }
+  return client;
+}

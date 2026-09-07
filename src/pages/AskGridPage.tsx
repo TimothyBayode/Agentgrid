@@ -78,17 +78,7 @@ export default function AskGridPage() {
   };
 
   return (
-    <AppShell
-      header={null}
-      actions={
-        <Button
-          asChild
-          className="h-7 border border-transparent bg-[#333333] px-4 text-[12px] font-normal text-white hover:bg-[#3d3d3d]"
-        >
-          <Link to="/auth">Sign In</Link>
-        </Button>
-      }
-    >
+    <AppShell>
       <main
         className={cn(
           "grid min-h-[calc(100vh-65px)]",

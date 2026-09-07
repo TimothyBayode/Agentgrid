@@ -16,7 +16,6 @@ import {
   Wrench,
   X,
 } from "lucide-react";
-import { Link } from "@/lib/router";
 import { AppShell } from "@/components/app/AppShell";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -129,14 +128,6 @@ export default function HelpSupportPage() {
           <LifeBuoy className="h-4 w-4 text-[#FAC102]" />
           Help & Support
         </div>
-      }
-      actions={
-        <Button
-          asChild
-          className="h-7 border border-transparent bg-[#333333] px-4 text-[12px] font-normal text-white hover:bg-[#3d3d3d]"
-        >
-          <Link to="/auth">Sign In</Link>
-        </Button>
       }
     >
       <main className="px-3 pb-10 sm:px-5">

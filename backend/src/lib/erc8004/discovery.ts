@@ -14,6 +14,8 @@ export type AgentRegistrationFile = {
   description?: string;
   image?: string;
   services?: AgentService[];
+  /** Some registrations publish A2A-style `endpoints` instead of `services`. */
+  endpoints?: AgentService[];
   x402Support?: boolean;
   active?: boolean;
   registrations?: Array<{ agentRegistry: string; agentId: number }>;

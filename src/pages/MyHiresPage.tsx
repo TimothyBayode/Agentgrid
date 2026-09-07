@@ -63,14 +63,6 @@ export default function MyHiresPage() {
           <AgentSearch value={query} onChange={setQuery} />
         </div>
       }
-      actions={
-        <Button
-          asChild
-          className="tip tip--bottom h-7 shrink-0 border border-transparent bg-[#333333] px-4 font-normal text-[12px] text-white transition-colors hover:bg-[#3d3d3d]"
-        >
-          <Link to="/auth">Sign In</Link>
-        </Button>
-      }
     >
       <div className="px-3 pb-8 sm:px-5">
         <div className="flex items-center justify-between gap-3 px-1 py-4 sm:px-0">

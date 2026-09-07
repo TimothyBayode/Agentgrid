@@ -1,11 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Menu } from "lucide-react";
-import { Link } from "@/lib/router";
 import { AgentSidebar } from "@/components/agents/AgentSidebar";
 import { AgentSearch } from "@/components/agents/AgentSearch";
 import { AgentFilters } from "@/components/agents/AgentFilters";
 import { AgentGrid } from "@/components/agents/AgentGrid";
-import { Button } from "@/components/ui/button";
 import { agentCategories, agents, agentMatchesFilter } from "@/data/agents";
 import { fetchOnchainAgents, toAgent } from "@/integrations/agents";
 import type { Agent } from "@/types/agent";
@@ -88,13 +86,6 @@ export default function AgentsPage() {
           <div className="w-full max-w-[520px]">
             <AgentSearch value={query} onChange={setQuery} />
           </div>
-
-          <Button
-            asChild
-            className="tip tip--bottom ml-auto h-7 shrink-0 border border-transparent bg-[#333333] px-4 font-normal text-[12px] text-white transition-colors hover:bg-[#3d3d3d]"
-          >
-            <Link to="/auth">Sign In</Link>
-          </Button>
         </header>
 
         <div className="px-4 py-4 sm:px-6">

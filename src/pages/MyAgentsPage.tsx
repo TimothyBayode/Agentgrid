@@ -78,14 +78,6 @@ function MyAgentsDashboard() {
           <AgentSearch value={query} onChange={setQuery} />
         </div>
       }
-      actions={
-        <Button
-          asChild
-          className="h-7 shrink-0 border border-transparent bg-[#333333] px-4 font-normal text-[12px] text-white transition-colors hover:bg-[#3d3d3d]"
-        >
-          <Link to="/auth">Sign In</Link>
-        </Button>
-      }
     >
       <main className="px-3 pb-10 sm:px-5">
         <div className="flex flex-wrap items-end justify-between gap-4 py-6">

@@ -2,7 +2,7 @@ import type { LinkedAccount, User } from "@privy-io/node";
 import { Router } from "express";
 import { getChainInfo } from "../lib/erc8004/discovery.js";
 import { privy } from "../lib/privy.js";
-import { supabase } from "../lib/supabase.js";
+import { getSupabase, isSupabaseConfigured } from "../lib/supabase.js";
 import { requireAuth } from "../middleware/require-auth.js";
 
 export const authRouter = Router();
@@ -52,6 +52,12 @@ authRouter.post("/sync", requireAuth, async (request, response) => {
     return;
   }
 
+  if (!isSupabaseConfigured()) {
+    response.status(503).json({ error: "User sync is not configured on this server" });
+    return;
+  }
+
+  const supabase = getSupabase();
   const { userId, sessionId } = claims;
 
   let privyUser: User;

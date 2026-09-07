@@ -18,7 +18,6 @@ import {
   Wallet,
   X,
 } from "lucide-react";
-import { Link } from "@/lib/router";
 import { AppShell } from "@/components/app/AppShell";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -72,17 +71,7 @@ export default function SettingsPage() {
   const [section, setSection] = useState<SettingSection>("Profile");
 
   return (
-    <AppShell
-      header={<span className="text-[13px] font-semibold text-foreground">Settings</span>}
-      actions={
-        <Button
-          asChild
-          className="h-7 border border-transparent bg-[#333333] px-4 text-[12px] font-normal text-white hover:bg-[#3d3d3d]"
-        >
-          <Link to="/auth">Sign In</Link>
-        </Button>
-      }
-    >
+    <AppShell header={<span className="text-[13px] font-semibold text-foreground">Settings</span>}>
       <main className="px-3 pb-10 sm:px-5">
         <div className="py-6">
           <h1 className="text-[24px] font-semibold tracking-tight text-white">Settings</h1>

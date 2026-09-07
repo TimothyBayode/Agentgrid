@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, Clock3, Search, Upload } from "lucide-react";
-import { Link } from "@/lib/router";
 import { AppShell } from "@/components/app/AppShell";
 import { AgentSearch } from "@/components/agents/AgentSearch";
 import { Button } from "@/components/ui/button";
@@ -77,14 +76,6 @@ export default function TransactionsPage() {
         <div className="w-full max-w-[520px]">
           <AgentSearch value={query} onChange={setQuery} />
         </div>
-      }
-      actions={
-        <Button
-          asChild
-          className="tip tip--bottom h-7 shrink-0 border border-transparent bg-[#333333] px-4 font-normal text-[12px] text-white transition-colors hover:bg-[#3d3d3d]"
-        >
-          <Link to="/auth">Sign In</Link>
-        </Button>
       }
     >
       <div className="px-3 pb-8 sm:px-5">

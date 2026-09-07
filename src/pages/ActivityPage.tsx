@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { Clock3, Search, Upload } from "lucide-react";
-import { Link } from "@/lib/router";
 import { AppShell } from "@/components/app/AppShell";
 import { Button } from "@/components/ui/button";
 import { ExportDialog, type ExportRow } from "@/components/export/ExportDialog";
@@ -68,14 +67,6 @@ export default function ActivityPage() {
             className="h-10 w-full rounded-[2px] border border-border bg-black pr-4 pl-11 text-[13px] text-white transition-colors placeholder:text-white/60 focus:border-[#333333] focus:outline-none"
           />
         </div>
-      }
-      actions={
-        <Button
-          asChild
-          className="h-7 shrink-0 border border-transparent bg-[#333333] px-4 font-normal text-[12px] text-white transition-colors hover:bg-[#3d3d3d]"
-        >
-          <Link to="/auth">Sign In</Link>
-        </Button>
       }
     >
       <div className="px-3 pb-8 sm:px-5">

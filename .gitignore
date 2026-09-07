@@ -12,6 +12,7 @@ dist
 *.local
 .env
 .env.*
+file.env
 !.env.example
 backend/.env
 backend/.env.*
