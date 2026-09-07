@@ -1,8 +1,36 @@
-import app from "./app.js";
+import express from "express";
+import cors from "cors";
 import { serverEnv } from "./config/env.js";
+import { authRouter } from "./routes/auth.js";
+import { agentsRouter } from "./routes/agents.js";
 
-app.listen(serverEnv.port, () => {
-  console.log(
-    `AgentGrid backend listening on http://localhost:${serverEnv.port}`
-  );
+const app = express();
+
+app.use(cors({ origin: serverEnv.frontendOrigin }));
+app.use(express.json());
+
+app.get("/health", (_request, response) => {
+  response.json({
+    ok: true,
+    service: "agentgrid-backend",
+  });
 });
+
+app.use("/api/auth", authRouter);
+app.use("/api/agents", agentsRouter);
+
+app.use((_request, response) => {
+  response.status(404).json({
+    error: "Not found",
+  });
+});
+
+export default app;
+
+if (process.env.NODE_ENV !== "production") {
+  app.listen(serverEnv.port, () => {
+    console.log(
+      `AgentGrid backend listening on http://localhost:${serverEnv.port}`
+    );
+  });
+}
