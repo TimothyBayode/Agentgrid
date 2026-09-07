@@ -30,6 +30,7 @@ The browser should only request a wallet signature after the user reviews a prep
 ## Provider Responsibilities
 
 - **Privy:** authentication, wallet connection, embedded wallets, access tokens, and user-approved signatures.
+- **Supabase:** the persistence layer. The backend (service role, server-side only) syncs Privy profiles and linked wallets, and stores marketplace state (`agents`, `hires`, `transactions`, `activity_events`). RLS denies the anon key; the browser never talks to Supabase directly.
 - **Cloudinary:** agent avatar/logo upload and transformed delivery. Use an unsigned upload preset or a backend-signed upload flow; never expose the API secret.
 - **ERC-8004:** agent identity registration lookup, ownership verification, and reputation/indexing data.
 - **ERC-8183 / x402 / b402:** commerce capability discovery, quote preparation, payment verification, and settlement status.

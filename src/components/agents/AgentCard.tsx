@@ -126,7 +126,9 @@ export function AgentCard({ agent }: { agent: Agent }) {
               </Button>
               <Button asChild className={actionButtonClasses} variant="outline">
                 <a
-                  href={`https://bscscan.com/address/${agent.id}`}
+                  href={
+                    agent.onchain?.explorerTokenUrl ?? `https://bscscan.com/address/${agent.id}`
+                  }
                   target="_blank"
                   rel="noreferrer"
                 >

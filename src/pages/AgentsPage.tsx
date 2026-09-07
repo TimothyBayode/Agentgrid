@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Menu } from "lucide-react";
 import { Link } from "@/lib/router";
 import { AgentSidebar } from "@/components/agents/AgentSidebar";
@@ -7,12 +7,44 @@ import { AgentFilters } from "@/components/agents/AgentFilters";
 import { AgentGrid } from "@/components/agents/AgentGrid";
 import { Button } from "@/components/ui/button";
 import { agentCategories, agents, agentMatchesFilter } from "@/data/agents";
+import { fetchOnchainAgents, toAgent } from "@/integrations/agents";
+import type { Agent } from "@/types/agent";
 import { cn } from "@/lib/utils";
+
+type CatalogSource = "erc8004" | "demo";
 
 export default function AgentsPage() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>("All");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [catalog, setCatalog] = useState<Agent[]>(agents);
+  const [source, setSource] = useState<CatalogSource>("demo");
+  const [chainName, setChainName] = useState<string | null>(null);
+  const [syncing, setSyncing] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetchOnchainAgents(12)
+      .then((result) => {
+        if (cancelled) return;
+        setCatalog(result.agents.map((agent, index) => toAgent(agent, result.chain, index)));
+        setChainName(result.chain.chainName);
+        setSource("erc8004");
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setCatalog(agents);
+        setSource("demo");
+      })
+      .finally(() => {
+        if (!cancelled) setSyncing(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const toggleSidebar = () => {
     const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
@@ -21,7 +53,7 @@ export default function AgentsPage() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return agents.filter((agent) => {
+    return catalog.filter((agent) => {
       const matchesQuery =
         q.length === 0 ||
         [agent.name, agent.creator, agent.protocol, ...agent.capabilities]
@@ -30,7 +62,7 @@ export default function AgentsPage() {
           .includes(q);
       return agentMatchesFilter(agent, category) && matchesQuery;
     });
-  }, [query, category]);
+  }, [catalog, query, category]);
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-surface">
@@ -71,6 +103,27 @@ export default function AgentsPage() {
 
         <div className="px-3 pb-8 sm:px-5">
           <section className="rounded-[2px] border border-border bg-background p-4 sm:p-5">
+            <p
+              className="mb-3 flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground"
+              aria-live="polite"
+            >
+              {syncing ? (
+                <>
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-chart-4" />
+                  Syncing with the ERC-8004 registry…
+                </>
+              ) : source === "erc8004" ? (
+                <>
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald" />
+                  Live from ERC-8004 · {chainName}
+                </>
+              ) : (
+                <>
+                  <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />
+                  Demo data — on-chain registry unavailable
+                </>
+              )}
+            </p>
             <AgentGrid agents={filtered} />
           </section>
         </div>

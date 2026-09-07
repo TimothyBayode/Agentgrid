@@ -9,9 +9,11 @@
   },
   "dependencies": {
     "@privy-io/node": "latest",
+    "@supabase/supabase-js": "^2.115.0",
     "cors": "latest",
     "dotenv": "latest",
-    "express": "latest"
+    "express": "latest",
+    "viem": "^2.56.3"
   },
   "devDependencies": {
     "@types/cors": "latest",
