@@ -20,6 +20,6 @@
     "@types/express": "latest",
     "@types/node": "latest",
     "tsx": "latest",
-    "typescript": "latest"
+    "typescript": "^5.8.3"
   }
 }
