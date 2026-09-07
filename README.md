@@ -16,6 +16,12 @@ Provider-specific code is intentionally isolated from page components:
 
 Copy `.env.example` to `.env.local` and fill in public values as providers are enabled. Vite variables are exposed to the browser, so never put private keys, Cloudinary API secrets, or backend signing credentials in them.
 
+## Deployment (Vercel)
+
+`vercel.json` deploys two services: the Vite frontend (repo root) and the Express backend (`backend/`). Top-level rewrites route `/api/*` to the backend and everything else to the frontend; the frontend's own rewrite resolves SPA routes (e.g. `/agents`) to `index.html`.
+
+`.env` is gitignored, so the public `VITE_*` variables must also be set in Vercel project settings (Environment Variables) for each environment. `VITE_PRIVY_APP_ID` is required — a deployment without it renders a visible "not configured" notice instead of a blank page. The backend's server-only variables (`PRIVY_*`, `SUPABASE_*`) likewise need to exist as Vercel environment variables for the backend service.
+
 ## Expected Backend Boundaries
 
 The frontend expects the backend to own authorization, persistence, indexing, and provider secrets:

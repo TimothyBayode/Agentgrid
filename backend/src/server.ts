@@ -29,8 +29,6 @@ export default app;
 
 if (process.env.NODE_ENV !== "production") {
   app.listen(serverEnv.port, () => {
-    console.log(
-      `AgentGrid backend listening on http://localhost:${serverEnv.port}`
-    );
+    console.log(`AgentGrid backend listening on http://localhost:${serverEnv.port}`);
   });
 }
