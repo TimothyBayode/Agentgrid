@@ -61,7 +61,7 @@ export type Erc8004Chain = {
 };
 
 export type Erc8004AgentList = {
-  source: "erc8004";
+  source: "erc8004" | "supabase";
   chain: Erc8004Chain;
   agents: Erc8004OnchainAgent[];
   total: number;

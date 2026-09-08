@@ -1,4 +1,4 @@
-import { createPublicClient, http, type PublicClient } from "viem";
+import { createPublicClient, fallback, http, type PublicClient } from "viem";
 import { identityRegistryAbi, reputationRegistryAbi } from "./abis.js";
 import { getErc8004ChainConfig, type Erc8004ChainConfig } from "./registry.js";
 
@@ -66,11 +66,14 @@ const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 let client: { url: string; value: PublicClient } | null = null;
 
-function getClient(rpcUrl: string): PublicClient {
-  if (!client || client.url !== rpcUrl) {
+function getClient(rpcUrls: string[]): PublicClient {
+  const cacheKey = rpcUrls.join("|");
+  if (!client || client.url !== cacheKey) {
     client = {
-      url: rpcUrl,
-      value: createPublicClient({ transport: http(rpcUrl, { timeout: REQUEST_TIMEOUT_MS }) }),
+      url: cacheKey,
+      value: createPublicClient({
+        transport: fallback(rpcUrls.map((url) => http(url, { timeout: REQUEST_TIMEOUT_MS }))),
+      }),
     };
   }
   return client.value;
@@ -117,7 +120,7 @@ export async function listOnchainAgents(
   } = {},
 ): Promise<AgentListResult> {
   const chain = getErc8004ChainConfig();
-  const publicClient = getClient(chain.rpcUrl);
+  const publicClient = getClient(chain.rpcUrls);
 
   const allIds = await findAgentIds(publicClient, chain);
   const limit = Math.min(Math.max(options.limit ?? DEFAULT_LIST_LIMIT, 1), MAX_AGENTS);
@@ -142,7 +145,7 @@ export async function listOnchainAgents(
 
 export async function getOnchainAgent(agentId: bigint): Promise<OnchainAgent> {
   const chain = getErc8004ChainConfig();
-  const publicClient = getClient(chain.rpcUrl);
+  const publicClient = getClient(chain.rpcUrls);
   return fetchAgent(publicClient, chain, agentId, { includeWallet: true });
 }
 
@@ -381,4 +384,9 @@ async function mapLimit<T, R>(
 
 export function getChainInfo() {
   return getErc8004ChainConfig();
+}
+
+export function getPublicClient(): PublicClient {
+  const chain = getErc8004ChainConfig();
+  return getClient(chain.rpcUrls);
 }

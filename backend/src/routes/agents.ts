@@ -1,5 +1,8 @@
 import { Router } from "express";
+import { serverEnv } from "../config/env.js";
 import { getChainInfo, getOnchainAgent, listOnchainAgents } from "../lib/erc8004/discovery.js";
+import { isSupabaseConfigured } from "../lib/supabase.js";
+import { listStoredAgents, syncAgentsIfStale } from "../lib/agents-sync.js";
 
 export const agentsRouter = Router();
 
@@ -32,12 +35,34 @@ agentsRouter.get("/", async (request, response) => {
   try {
     const limit = parseBoundedInt(request.query.limit, 1, 200);
     const offset = parseBoundedInt(request.query.offset, 0, Number.MAX_SAFE_INTEGER);
-    const result = await listOnchainAgents({ limit, offset });
-    response.json({ source: "erc8004", chain: chainPayload(), ...result });
+    if (isSupabaseConfigured()) {
+      await syncAgentsIfStale();
+      const result = await listStoredAgents({ limit, offset });
+      response.json({ source: "supabase", chain: chainPayload(), ...result });
+    } else {
+      const result = await listOnchainAgents({ limit, offset });
+      response.json({ source: "erc8004", chain: chainPayload(), ...result });
+    }
   } catch (error) {
     response.status(502).json({
       source: "erc8004",
       error: "Failed to read ERC-8004 registry",
+      detail: error instanceof Error ? error.message : String(error),
+    });
+  }
+});
+
+agentsRouter.get("/sync", async (request, response) => {
+  if (serverEnv.cronSecret && request.get("authorization") !== `Bearer ${serverEnv.cronSecret}`) {
+    response.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  try {
+    await syncAgentsIfStale(true);
+    response.json({ ok: true, chainId: getChainInfo().chainId });
+  } catch (error) {
+    response.status(502).json({
+      error: "Failed to synchronize ERC-8004 agents",
       detail: error instanceof Error ? error.message : String(error),
     });
   }

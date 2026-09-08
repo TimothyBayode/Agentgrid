@@ -18,6 +18,8 @@ export type Erc8004ChainConfig = {
   chainName: string;
   /** RPC endpoint used for reads. */
   rpcUrl: string;
+  /** Ordered RPC endpoints. The public endpoint is tried first. */
+  rpcUrls: string[];
   /** Identity Registry (ERC-721) address. */
   identityRegistry: `0x${string}`;
   /** Reputation Registry address. */
@@ -46,6 +48,11 @@ const CONFIGS: Record<"testnet" | "mainnet", Erc8004ChainConfig> = {
     chainId: 97,
     chainName: "BNB Smart Chain Testnet",
     rpcUrl: serverEnv.bscTestnetRpcUrl,
+    rpcUrls: [
+      serverEnv.bscTestnetRpcUrl,
+      serverEnv.bscTestnetQuicknodeRpcUrl || serverEnv.bscQuicknodeRpcUrl || serverEnv.quicknodeRpcUrl,
+      serverEnv.bscTestnetAlchemyRpcUrl || serverEnv.bscAlchemyRpcUrl || serverEnv.alchemyRpcUrl,
+    ].filter(Boolean),
     identityRegistry: toChecksummed(IDENTITIES.testnet),
     reputationRegistry: toChecksummed(REPUTATIONS.testnet),
     agentRegistry: `eip155:97:${IDENTITIES.testnet.toLowerCase()}`,
@@ -54,6 +61,11 @@ const CONFIGS: Record<"testnet" | "mainnet", Erc8004ChainConfig> = {
     chainId: 56,
     chainName: "BNB Smart Chain",
     rpcUrl: serverEnv.bscMainnetRpcUrl,
+    rpcUrls: [
+      serverEnv.bscMainnetRpcUrl,
+      serverEnv.bscMainnetQuicknodeRpcUrl || serverEnv.bscQuicknodeRpcUrl || serverEnv.quicknodeRpcUrl,
+      serverEnv.bscMainnetAlchemyRpcUrl || serverEnv.bscAlchemyRpcUrl || serverEnv.alchemyRpcUrl,
+    ].filter(Boolean),
     identityRegistry: toChecksummed(IDENTITIES.mainnet),
     reputationRegistry: toChecksummed(REPUTATIONS.mainnet),
     agentRegistry: `eip155:56:${IDENTITIES.mainnet.toLowerCase()}`,

@@ -3,6 +3,7 @@ import cors from "cors";
 import { serverEnv } from "./config/env.js";
 import { authRouter } from "./routes/auth.js";
 import { agentsRouter } from "./routes/agents.js";
+import { startAgentSync } from "./lib/agents-sync.js";
 
 const app = express();
 
@@ -32,3 +33,5 @@ if (process.env.NODE_ENV !== "production") {
     console.log(`AgentGrid backend listening on http://localhost:${serverEnv.port}`);
   });
 }
+
+startAgentSync();

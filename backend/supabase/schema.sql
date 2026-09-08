@@ -76,13 +76,30 @@ create table if not exists public.agents (
   agent_id text,
   agent_registry text,
   owner text,
+  agent_wallet text,
+  token_uri text,
+  registration jsonb,
+  reputation_signals jsonb not null default '[]'::jsonb,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (chain_id, agent_id)
 );
 
+-- These columns are also safe to add to an existing project created from an
+-- older version of this schema.
+alter table public.agents add column if not exists agent_wallet text;
+alter table public.agents add column if not exists token_uri text;
+alter table public.agents add column if not exists registration jsonb;
+alter table public.agents add column if not exists reputation_signals jsonb not null default '[]'::jsonb;
+
 create index if not exists agents_status_idx on public.agents (status);
 create index if not exists agents_category_idx on public.agents (category);
+
+create table if not exists public.agent_sync_state (
+  chain_id integer primary key,
+  last_synced_at timestamptz not null
+);
+alter table public.agent_sync_state enable row level security;
 
 -- ---------------------------------------------------------------------------
 -- hires: one row per agent hire, mirroring the HireStatus lifecycle
