@@ -10,12 +10,15 @@ import {
   WalletCards,
   X,
 } from "lucide-react";
-import { Link } from "@/lib/router";
+import { usePrivy } from "@privy-io/react-auth";
+import { Link, useNavigate } from "@/lib/router";
 import { AppShell } from "@/components/app/AppShell";
 import { Button } from "@/components/ui/button";
 import { agents } from "@/data/agents";
 import type { Agent } from "@/types/agent";
 import { cn } from "@/lib/utils";
+import { authenticatedRequest } from "@/integrations/api";
+import type { AskGridAskResponse } from "@/types/ask-grid";
 
 const prompts = [
   "Find me the best yield agents",
@@ -32,14 +35,22 @@ const recentConversations = [
 ];
 
 export default function AskGridPage() {
+  const navigate = useNavigate();
+  const { getAccessToken } = usePrivy();
   const [input, setInput] = useState("");
   const [question, setQuestion] = useState<string | null>(null);
   const [selected, setSelected] = useState<Agent | null>(null);
   const [compare, setCompare] = useState<Agent[]>([]);
   const [hireAgent, setHireAgent] = useState<Agent | null>(null);
   const [historyOpen, setHistoryOpen] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [gridAnswer, setGridAnswer] = useState<string | null>(null);
+  const [recommendations, setRecommendations] = useState<Agent[]>([]);
+  const [suggestedAction, setSuggestedAction] = useState<"view" | "compare" | "hire" | null>(null);
 
-  const recommendations = useMemo(() => {
+  const localRecommendations = useMemo(() => {
     const query = (question ?? "").toLowerCase();
     return agents
       .filter((agent) => {
@@ -61,12 +72,53 @@ export default function AskGridPage() {
       .slice(0, 4);
   }, [question]);
 
-  const ask = (value: string) => {
+  const ask = async (value: string) => {
     const next = value.trim();
     if (!next) return;
+    setError(null);
+    setLoading(true);
     setQuestion(next);
     setInput("");
     setCompare([]);
+    setSelected(null);
+    setGridAnswer(null);
+    setSuggestedAction(null);
+
+    try {
+      const token = await getAccessToken();
+      if (!token) {
+        setError("Please sign in to ask Grid.");
+        setLoading(false);
+        return;
+      }
+
+      const response = await authenticatedRequest<AskGridAskResponse>("ask", async () => token, {
+        method: "POST",
+        body: JSON.stringify({
+          question: next,
+          conversationId,
+          previousMessages: [],
+        }),
+      });
+
+      setGridAnswer(response.answer);
+      setConversationId(response.conversationId ?? conversationId);
+      setSuggestedAction(response.suggestedAction ?? null);
+
+      if (response.recommendations?.length) {
+        const matched = response.recommendations
+          .map((rec) => agents.find((agent) => agent.id === rec.agentId))
+          .filter((agent): agent is Agent => Boolean(agent));
+        setRecommendations(matched);
+      } else {
+        setRecommendations(localRecommendations);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to reach Ask Grid.");
+      setRecommendations(localRecommendations);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const toggleCompare = (agent: Agent) => {
@@ -145,9 +197,13 @@ export default function AskGridPage() {
             ) : (
               <Conversation
                 question={question}
+                answer={gridAnswer}
+                loading={loading}
                 recommendations={recommendations}
                 selected={selected}
                 compare={compare}
+                suggestedAction={suggestedAction}
+                error={error}
                 onSelect={setSelected}
                 onCompare={toggleCompare}
                 onHire={setHireAgent}
@@ -214,17 +270,25 @@ export default function AskGridPage() {
 
 function Conversation({
   question,
+  answer,
+  loading,
   recommendations,
   selected,
   compare,
+  suggestedAction,
+  error,
   onSelect,
   onCompare,
   onHire,
 }: {
   question: string;
+  answer: string | null;
+  loading: boolean;
   recommendations: Agent[];
   selected: Agent | null;
   compare: Agent[];
+  suggestedAction: "view" | "compare" | "hire" | null;
+  error: string | null;
   onSelect: (agent: Agent) => void;
   onCompare: (agent: Agent) => void;
   onHire: (agent: Agent) => void;
@@ -239,12 +303,25 @@ function Conversation({
       </div>
       <div>
         <p className="text-[10px] font-semibold tracking-[0.16em] text-[#FAC102] uppercase">Grid</p>
-        <p className="mt-2 text-[14px] leading-relaxed text-foreground">
-          I found {recommendations.length || 3} agents matching your requirements.
-        </p>
-        <p className="mt-1 text-[12px] text-muted-foreground">
-          I ranked them using reputation, success rate, execution time, price, and recent activity.
-        </p>
+        {loading ? (
+          <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">Thinking...</p>
+        ) : answer ? (
+          <>
+            <p className="mt-2 text-[14px] leading-relaxed text-foreground">{answer}</p>
+            {suggestedAction === "view" ? (
+              <div className="mt-4">
+                <Button asChild variant="outline" className="h-8 border-border px-3 text-[12px]">
+                  <Link to="/agents">Browse agents</Link>
+                </Button>
+              </div>
+            ) : null}
+          </>
+        ) : (
+          <p className="mt-2 text-[14px] leading-relaxed text-foreground">
+            I found {recommendations.length || 3} agents matching your requirements.
+          </p>
+        )}
+        {error ? <p className="mt-3 text-[12px] text-red-500">{error}</p> : null}
       </div>
       {recommendations.length ? (
         <div className="mt-5 grid gap-3">

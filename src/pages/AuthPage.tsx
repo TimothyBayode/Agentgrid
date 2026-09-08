@@ -1,20 +1,28 @@
-import { useState } from "react";
-import { useLogin } from "@privy-io/react-auth";
+import { useEffect, useState } from "react";
+import { useLogin, usePrivy } from "@privy-io/react-auth";
 import { useNavigate } from "@/lib/router";
 import { AuthShowcase } from "@/components/auth/AuthShowcase";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 
 export default function AuthPage() {
   const navigate = useNavigate();
+  const { authenticated } = usePrivy();
   const [error, setError] = useState<string | null>(null);
-  const { login } = useLogin({
-    onComplete: () => navigate("/agents", { replace: true }),
-    onError: (loginError) => setError(String(loginError)),
-  });
+  const { login } = useLogin();
 
-  const startLogin = (provider: "google" | "github" | "discord" | "wallet") => {
+  useEffect(() => {
+    if (authenticated) {
+      navigate("/agents", { replace: true });
+    }
+  }, [authenticated, navigate]);
+
+  const startLogin = async (provider: "google" | "github" | "discord" | "wallet") => {
     setError(null);
-    login({ loginMethods: [provider] });
+    try {
+      await login({ loginMethods: [provider] });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    }
   };
 
   return (

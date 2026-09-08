@@ -50,7 +50,9 @@ const CONFIGS: Record<"testnet" | "mainnet", Erc8004ChainConfig> = {
     rpcUrl: serverEnv.bscTestnetRpcUrl,
     rpcUrls: [
       serverEnv.bscTestnetRpcUrl,
-      serverEnv.bscTestnetQuicknodeRpcUrl || serverEnv.bscQuicknodeRpcUrl || serverEnv.quicknodeRpcUrl,
+      serverEnv.bscTestnetQuicknodeRpcUrl ||
+        serverEnv.bscQuicknodeRpcUrl ||
+        serverEnv.quicknodeRpcUrl,
       serverEnv.bscTestnetAlchemyRpcUrl || serverEnv.bscAlchemyRpcUrl || serverEnv.alchemyRpcUrl,
     ].filter(Boolean),
     identityRegistry: toChecksummed(IDENTITIES.testnet),
@@ -63,7 +65,9 @@ const CONFIGS: Record<"testnet" | "mainnet", Erc8004ChainConfig> = {
     rpcUrl: serverEnv.bscMainnetRpcUrl,
     rpcUrls: [
       serverEnv.bscMainnetRpcUrl,
-      serverEnv.bscMainnetQuicknodeRpcUrl || serverEnv.bscQuicknodeRpcUrl || serverEnv.quicknodeRpcUrl,
+      serverEnv.bscMainnetQuicknodeRpcUrl ||
+        serverEnv.bscQuicknodeRpcUrl ||
+        serverEnv.quicknodeRpcUrl,
       serverEnv.bscMainnetAlchemyRpcUrl || serverEnv.bscAlchemyRpcUrl || serverEnv.alchemyRpcUrl,
     ].filter(Boolean),
     identityRegistry: toChecksummed(IDENTITIES.mainnet),
