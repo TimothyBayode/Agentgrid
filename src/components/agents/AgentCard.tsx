@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Link, useNavigate } from "@/lib/router";
 
 const statusStyles: Record<Agent["status"], string> = {
   online: "bg-emerald",
@@ -22,6 +23,7 @@ const actionButtonClasses =
 
 export function AgentCard({ agent }: { agent: Agent }) {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -120,7 +122,10 @@ export function AgentCard({ agent }: { agent: Agent }) {
               <Button
                 className={actionButtonClasses}
                 variant="outline"
-                onClick={() => setOpen(false)}
+                onClick={() => {
+                  setOpen(false);
+                  navigate(`/ask-grid?compare=${encodeURIComponent(agent.id)}`);
+                }}
               >
                 Compare
               </Button>
@@ -139,12 +144,21 @@ export function AgentCard({ agent }: { agent: Agent }) {
               <Button
                 className={actionButtonClasses}
                 variant="outline"
-                onClick={() => setOpen(false)}
+                onClick={() => {
+                  setOpen(false);
+                  navigate(`/ask-grid?hire=${encodeURIComponent(agent.id)}`);
+                }}
               >
                 Hire
               </Button>
             </div>
-            <Button className="mt-2 w-full bg-[#FAC102] text-black hover:bg-[#FAC102]/90">
+            <Button
+              className="mt-2 w-full bg-[#FAC102] text-black hover:bg-[#FAC102]/90"
+              onClick={() => {
+                setOpen(false);
+                navigate(`/ask-grid?hire=${encodeURIComponent(agent.id)}`);
+              }}
+            >
               <BotMessageSquare className="h-4 w-4" />
               Ask Grid
             </Button>

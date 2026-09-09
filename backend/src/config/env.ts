@@ -18,7 +18,10 @@ export const serverEnv = {
   privyAppSecret: required("PRIVY_APP_SECRET"),
   privyJwtVerificationKey: required("PRIVY_JWT_VERIFICATION_KEY"),
   geminiApiKey: optional("GEMINI_API_KEY", ""),
-  erc8004Chain: optional("ERC8004_CHAIN", "testnet"),
+  // The marketplace catalog is intentionally restricted to BNB Smart Chain.
+  // Keep the testnet option for local contract testing, but default production
+  // deployments to BSC mainnet.
+  erc8004Chain: optional("ERC8004_CHAIN", "mainnet"),
   bscTestnetRpcUrl: optional("BSC_TESTNET_RPC_URL", "https://bsc-testnet-rpc.publicnode.com"),
   bscMainnetRpcUrl: optional("BSC_MAINNET_RPC_URL", "https://bsc-rpc.publicnode.com"),
   bscTestnetQuicknodeRpcUrl: optional("BSC_TESTNET_QUICKNODE_RPC_URL", ""),

@@ -49,8 +49,27 @@ async function syncAgents(): Promise<void> {
   if (rows.length > 0) {
     const { error } = await supabase.from("agents").upsert(rows, {
       onConflict: "chain_id,agent_id",
-      ignoreDuplicates: true,
     });
+    if (error) throw error;
+  }
+
+  // Remove records that were revoked or are no longer enumerable. This keeps
+  // the marketplace a snapshot of the selected BSC registry, not an archive.
+  const currentAgentIds = agents.map((agent) => agent.agentId);
+  const { data: storedAgents, error: storedError } = await supabase
+    .from("agents")
+    .select("agent_id")
+    .eq("chain_id", getChainInfo().chainId);
+  if (storedError) throw storedError;
+  const staleIds = (storedAgents ?? [])
+    .map((row) => row.agent_id as string)
+    .filter((agentId) => !currentAgentIds.includes(agentId));
+  if (staleIds.length > 0) {
+    const { error } = await supabase
+      .from("agents")
+      .delete()
+      .eq("chain_id", getChainInfo().chainId)
+      .in("agent_id", staleIds);
     if (error) throw error;
   }
   const { error } = await supabase

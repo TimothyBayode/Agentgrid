@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { Upload } from "lucide-react";
 import { Link } from "@/lib/router";
 import { AppShell } from "@/components/app/AppShell";
@@ -9,7 +9,15 @@ import { SummaryCards } from "@/components/hires/SummaryCards";
 import { ActiveHires } from "@/components/hires/ActiveHires";
 import { HireTable } from "@/components/hires/HireTable";
 import { AskGrid } from "@/components/hires/AskGrid";
-import { formatDate, formatUsd, hires, isLive, statusGroup, type StatusGroup } from "@/data/hires";
+import {
+  formatDate,
+  formatUsd,
+  isLive,
+  statusGroup,
+  type StatusGroup,
+  type Hire,
+} from "@/data/hires";
+import { listHires } from "@/integrations/commerce";
 import { cn } from "@/lib/utils";
 
 const statusFilters: Array<StatusGroup | "All"> = [
@@ -25,6 +33,27 @@ export default function MyHiresPage() {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusGroup | "All">("All");
   const [exportOpen, setExportOpen] = useState(false);
+  const [hires, setHires] = useState<Hire[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    listHires()
+      .then((result) => {
+        if (cancelled) return;
+        setHires(result.hires as Hire[]);
+      })
+      .catch(() => {
+        if (cancelled) return;
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -37,7 +66,7 @@ export default function MyHiresPage() {
         [hire.agentName, hire.task, hire.category, hire.status].join(" ").toLowerCase().includes(q);
       return matchesStatus && matchesQuery;
     });
-  }, [query, status]);
+  }, [hires, query, status]);
 
   const activeHires = useMemo(() => filtered.filter((hire) => isLive(hire.status)), [filtered]);
 

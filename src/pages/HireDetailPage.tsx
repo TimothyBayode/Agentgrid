@@ -2,11 +2,47 @@ import { ArrowLeft, ArrowUpRight, Check, Plus } from "lucide-react";
 import { Link, useParams } from "@/lib/router";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/hires/StatusBadge";
-import { formatDuration, formatDate, formatTime, formatUsd, getHireById } from "@/data/hires";
+import { formatDuration, formatDate, formatTime, formatUsd, type Hire } from "@/data/hires";
+import { getHire } from "@/integrations/commerce";
+import { useEffect, useState } from "react";
 
 export default function HireDetailPage() {
   const { hireId } = useParams<{ hireId: string }>();
-  const hire = hireId ? getHireById(hireId) : undefined;
+  const [hire, setHire] = useState<Hire | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    if (!hireId) {
+      setHire(undefined);
+      setLoading(false);
+      return;
+    }
+    getHire(hireId)
+      .then((result) => {
+        if (cancelled) return;
+        setHire(result.hire as Hire);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setHire(undefined);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [hireId]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <p className="text-[14px] text-muted-foreground">Loading hire...</p>
+      </div>
+    );
+  }
 
   if (!hire) {
     return (

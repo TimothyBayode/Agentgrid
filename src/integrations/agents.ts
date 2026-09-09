@@ -70,6 +70,8 @@ export type Erc8004AgentList = {
 };
 
 export async function fetchOnchainAgents(limit = 12, offset = 0) {
+  // The marketplace is BSC-only. The backend selects the configured BSC
+  // registry and persists its snapshot in Supabase before serving this call.
   return apiRequest<Erc8004AgentList>(`agents?limit=${limit}&offset=${offset}`);
 }
 

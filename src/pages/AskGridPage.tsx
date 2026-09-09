@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useEffect, useState } from "react";
 import {
   ChevronRight,
   GitCompare,
@@ -9,6 +9,7 @@ import {
   Star,
   WalletCards,
   X,
+  Loader2,
 } from "lucide-react";
 import { usePrivy } from "@privy-io/react-auth";
 import { Link, useNavigate } from "@/lib/router";
@@ -18,6 +19,7 @@ import { agents } from "@/data/agents";
 import type { Agent } from "@/types/agent";
 import { cn } from "@/lib/utils";
 import { authenticatedRequest } from "@/integrations/api";
+import { prepareHire, requestHireSignature, submitHire } from "@/integrations/commerce";
 import type { AskGridAskResponse } from "@/types/ask-grid";
 
 const prompts = [
@@ -36,7 +38,7 @@ const recentConversations = [
 
 export default function AskGridPage() {
   const navigate = useNavigate();
-  const { getAccessToken } = usePrivy();
+  const { getAccessToken, user } = usePrivy();
   const [input, setInput] = useState("");
   const [question, setQuestion] = useState<string | null>(null);
   const [selected, setSelected] = useState<Agent | null>(null);
@@ -49,6 +51,24 @@ export default function AskGridPage() {
   const [gridAnswer, setGridAnswer] = useState<string | null>(null);
   const [recommendations, setRecommendations] = useState<Agent[]>([]);
   const [suggestedAction, setSuggestedAction] = useState<"view" | "compare" | "hire" | null>(null);
+  const [hireError, setHireError] = useState<string | null>(null);
+  const [hireLoading, setHireLoading] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const hireId = params.get("hire");
+    const compareId = params.get("compare");
+
+    if (hireId) {
+      const agent = agents.find((a) => a.id === hireId);
+      if (agent) setHireAgent(agent);
+    }
+
+    if (compareId) {
+      const agent = agents.find((a) => a.id === compareId);
+      if (agent) setCompare([agent]);
+    }
+  }, []);
 
   const localRecommendations = useMemo(() => {
     const query = (question ?? "").toLowerCase();
@@ -263,7 +283,22 @@ export default function AskGridPage() {
           </div>
         </section>
       </main>
-      {hireAgent ? <HirePreparation agent={hireAgent} onClose={() => setHireAgent(null)} /> : null}
+      {hireAgent ? (
+        <HirePreparation
+          agent={hireAgent}
+          error={hireError}
+          loading={hireLoading}
+          onClose={() => {
+            setHireAgent(null);
+            setHireError(null);
+          }}
+          onHired={() => {
+            setHireAgent(null);
+            setHireError(null);
+            navigate("/hires");
+          }}
+        />
+      ) : null}
     </AppShell>
   );
 }
@@ -477,7 +512,62 @@ function ContextStat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function HirePreparation({ agent, onClose }: { agent: Agent; onClose: () => void }) {
+function HirePreparation({
+  agent,
+  error,
+  loading,
+  onClose,
+  onHired,
+}: {
+  agent: Agent;
+  error: string | null;
+  loading: boolean;
+  onClose: () => void;
+  onHired: () => void;
+}) {
+  const { getAccessToken, user } = usePrivy();
+
+  const handleReviewAndHire = async () => {
+    setHireError(null);
+    setHireLoading(true);
+
+    try {
+      const token = await getAccessToken();
+      if (!token) {
+        setHireError("Please sign in to hire this agent.");
+        setHireLoading(false);
+        return;
+      }
+
+      const prepared = await prepareHire(agent.id, `Hire ${agent.name} for marketplace task`);
+
+      const sign = async (message: string) => {
+        const privyUser = user;
+        if (!privyUser) throw new Error("No Privy user available for signing");
+
+        const wallets = privyUser.wallet?.wallets || [];
+        const bnbWallet = wallets.find((w) => w.chainId === 56 || w.chainId === 97);
+        if (!bnbWallet) throw new Error("No BNB Chain wallet connected");
+
+        const signature = await bnbWallet.signMessage({ message });
+        return signature;
+      };
+
+      const signed = await requestHireSignature(
+        prepared.authorization,
+        prepared.authorization.quote,
+        sign,
+      );
+      await submitHire(signed.hireId, signed.agentId, signed.task);
+
+      onHired();
+    } catch (err) {
+      setHireError(err instanceof Error ? err.message : "Failed to complete hire.");
+    } finally {
+      setHireLoading(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
       <div
@@ -508,17 +598,34 @@ function HirePreparation({ agent, onClose }: { agent: Agent; onClose: () => void
           <ContextStat label="Network" value="BNB Smart Chain" />
           <ContextStat label="Execution" value="Agent analyzes and returns a result" />
         </div>
-        <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
-          Grid will prepare the hire, but no transaction starts until you review and approve it with
-          your wallet.
-        </p>
+        {error ? (
+          <p className="mt-3 text-[11px] text-red-500">{error}</p>
+        ) : (
+          <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
+            Grid will prepare the hire, but no transaction starts until you review and approve it
+            with your wallet.
+          </p>
+        )}
         <div className="mt-5 flex justify-end gap-2">
           <Button variant="ghost" onClick={onClose} className="text-muted-foreground">
             Cancel
           </Button>
-          <Button className="bg-[#FAC102] text-[12px] text-black hover:bg-[#FAC102]/90">
-            <WalletCards className="h-3.5 w-3.5" />
-            Review & Hire
+          <Button
+            onClick={handleReviewAndHire}
+            disabled={loading}
+            className="bg-[#FAC102] text-[12px] text-black hover:bg-[#FAC102]/90"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                Preparing...
+              </>
+            ) : (
+              <>
+                <WalletCards className="h-3.5 w-3.5" />
+                Review & Hire
+              </>
+            )}
           </Button>
         </div>
       </div>

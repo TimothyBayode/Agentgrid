@@ -23,7 +23,7 @@ export default function AgentsPage() {
   useEffect(() => {
     let cancelled = false;
 
-    fetchOnchainAgents(12)
+    fetchOnchainAgents(200)
       .then((result) => {
         if (cancelled) return;
         setCatalog(result.agents.map((agent, index) => toAgent(agent, result.chain, index)));
@@ -32,7 +32,7 @@ export default function AgentsPage() {
       })
       .catch(() => {
         if (cancelled) return;
-        setCatalog(agents);
+        setCatalog([]);
         setSource("demo");
       })
       .finally(() => {
@@ -111,7 +111,7 @@ export default function AgentsPage() {
               ) : (
                 <>
                   <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />
-                  Demo data — on-chain registry unavailable
+                  BSC registry unavailable
                 </>
               )}
             </p>
