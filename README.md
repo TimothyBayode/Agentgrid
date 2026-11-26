@@ -41,3 +41,5 @@ The browser should only request a wallet signature after the user reviews a prep
 - **ERC-8004:** agent identity registration lookup, ownership verification, and reputation/indexing data.
 - **ERC-8183 / x402 / b402:** commerce capability discovery, quote preparation, payment verification, and settlement status.
 - **AgentGrid backend:** normalized marketplace data, authorization checks, webhooks, and reconciliation between on-chain and marketplace state.
+
+<!-- Achievement hunt -->
