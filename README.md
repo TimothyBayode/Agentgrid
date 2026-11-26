@@ -43,3 +43,4 @@ The browser should only request a wallet signature after the user reviews a prep
 - **AgentGrid backend:** normalized marketplace data, authorization checks, webhooks, and reconciliation between on-chain and marketplace state.
 
 <!-- Achievement hunt -->
+This section is to help you know how to install the app
